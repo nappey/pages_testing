@@ -1,0 +1,295 @@
+.tab {
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    background: none;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  
+  .active-tab {
+    color: #1a237e;
+    border-bottom: 2px solid #1a237e;
+  }
+  
+  .card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+  }
+  
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 16px;
+  }
+  
+  .subsection-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin-top: 24px;
+    margin-bottom: 12px;
+  }
+  
+  .summary-text {
+    color: #4b5563;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+  }
+  
+  .scope-list {
+    list-style-type: disc;
+    margin-left: 24px;
+    color: #4b5563;
+  }
+  
+  .scope-item {
+    margin-bottom: 8px;
+  }
+  
+  .sidebar-card {
+    background-color: #f9fafb;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  
+  .details-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .detail-item {
+    display: flex;
+    align-items: flex-start;
+  }
+  
+  .detail-icon {
+    color: #9ca3af;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  
+  .detail-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 2px;
+  }
+  
+  .detail-value {
+    font-size: 0.875rem;
+    color: #374151;
+  }
+  
+  .data-sources {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .data-source {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    color: #4b5563;
+  }
+  
+  .source-icon {
+    color: #9ca3af;
+    margin-right: 8px;
+  }
+  
+  .findings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .finding-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  
+  .finding-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  
+  .finding-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+  }
+  
+  .finding-badges {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .finding-description {
+    font-size: 0.875rem;
+    color: #4b5563;
+    margin-bottom: 8px;
+  }
+  
+  .finding-details {
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  .ioc-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .ioc-table th {
+    text-align: left;
+    padding: 12px 16px;
+    background-color: #f9fafb;
+    color: #6b7280;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .ioc-table td {
+    padding: 12px 16px;
+    border-top: 1px solid #f3f4f6;
+  }
+  
+  .ioc-type {
+    font-weight: 500;
+    color: #374151;
+  }
+  
+  .ioc-value {
+    font-family: monospace;
+    word-break: break-all;
+    color: #4b5563;
+  }
+  
+  .ioc-context {
+    color: #6b7280;
+  }
+  
+  .techniques-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .technique-card {
+    display: flex;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  
+  .technique-icon {
+    background-color: #fef2f2;
+    padding: 10px;
+    border-radius: 8px;
+    color: #b91c1c;
+    margin-right: 16px;
+    flex-shrink: 0;
+  }
+  
+  .technique-content {
+    flex: 1;
+  }
+  
+  .technique-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 8px;
+  }
+  
+  .technique-id {
+    font-family: monospace;
+    color: #b91c1c;
+  }
+  
+  .technique-description {
+    font-size: 0.875rem;
+    color: #4b5563;
+  }
+  
+  .recommendations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .recommendation-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  
+  .recommendation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  
+  .recommendation-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+  }
+  
+  .recommendation-details {
+    font-size: 0.875rem;
+    color: #4b5563;
+  }
+  
+  @media (max-width: 1024px) {
+    .summary-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .finding-header {
+      flex-direction: column;
+    }
+    
+    .finding-badges {
+      margin-top: 8px;
+    }
+  }
+  
+  @media (max-width: 640px) {
+    .report-header-content {
+      flex-direction: column;
+    }
+    
+    .report-info {
+      margin-top: 16px;
+      width: 100%;
+    }
+    
+    .report-info-item {
+      text-align: left;
+    }
+  }
